@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Dashboard — Site</title>
+<link rel="manifest" href="admin.webmanifest">
+<meta name="theme-color" content="#161616">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dashboard">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="css/admin.css">
 <script>if(localStorage.getItem("admin-theme")==="dark")document.documentElement.classList.add("dark")</script>
 </head>
@@ -52,6 +60,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script>document.querySelectorAll("[data-theme-btn]").forEach(b=>b.addEventListener("click",()=>{const d=document.documentElement.classList.toggle("dark");try{localStorage.setItem("admin-theme",d?"dark":"light")}catch(e){}}))</script>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("admin-sw.js",{scope:"admin.html"}).catch(()=>{}))</script>
 <script src="firebase-config.js"></script>
 <script src="js/admin.js" type="module"></script>
 </body>
