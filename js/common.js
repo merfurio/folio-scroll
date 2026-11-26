@@ -2,6 +2,8 @@
 gsap.registerPlugin(ScrollTrigger);
 
 history.scrollRestoration = 'manual';
+/* pré-visualização do dashboard: iframe com name=folio-preview (ou ?preview=1) */
+const PREVIEW = window.name === 'folio-preview' || new URLSearchParams(location.search).get('preview') === '1';
 const pad2 = (n) => String(n).padStart(2, '0');
 
 /* ---------- scroll suave (Lenis) ligado ao ScrollTrigger ---------- */
@@ -49,32 +51,37 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
 });
 
 /* ---------- vídeo: carrega ao aproximar, toca ao entrar no ecrã, pausa ao sair ---------- */
+const ALL_VIDS = [];
+const REDUCE_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const playVid = (v) => { if (!REDUCE_MOTION) v.play().catch(() => {}); };
+const loadVid = (v) => {
+  if (v.src || !v.dataset.src) return;
+  v.src = v.dataset.src;
+  v.addEventListener('loadeddata', () => {
+    v.classList.add('is-ready');
+    (v.closest('[data-label]') || v.parentElement).classList.add('has-video');
+  }, { once: true });
+  v.load();
+};
+const nearObs = new IntersectionObserver((es) => es.forEach((e) => {
+  if (e.isIntersecting) { loadVid(e.target); nearObs.unobserve(e.target); }
+}), { rootMargin: '100% 100% 100% 100%' });
+const seenObs = new IntersectionObserver((es) => es.forEach((e) => {
+  if (e.isIntersecting) { loadVid(e.target); playVid(e.target); } else e.target.pause();
+}), { threshold: 0.25 });
+
 function initVideos(root = document) {
-  const vids = [...root.querySelectorAll('video.vid')];
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const load = (v) => {
-    if (v.src || !v.dataset.src) return;
-    v.src = v.dataset.src;
-    v.addEventListener('loadeddata', () => {
-      v.classList.add('is-ready');
-      (v.closest('[data-label]') || v.parentElement).classList.add('has-video');
-    }, { once: true });
-    v.load();
-  };
-  const play = (v) => { if (!reduce) v.play().catch(() => {}); };
-  const near = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { load(e.target); near.unobserve(e.target); }
-  }), { rootMargin: '100% 100% 100% 100%' });
-  const seen = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { load(e.target); play(e.target); } else e.target.pause();
-  }), { threshold: 0.25 });
-  vids.forEach((v) => { near.observe(v); seen.observe(v); });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) vids.forEach((v) => v.pause());
-    else vids.forEach((v) => {
-      const r = v.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) play(v);
-    });
+  root.querySelectorAll('video.vid').forEach((v) => {
+    if (ALL_VIDS.includes(v)) return;
+    ALL_VIDS.push(v);
+    nearObs.observe(v);
+    seenObs.observe(v);
   });
 }
-initVideos();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) ALL_VIDS.forEach((v) => v.pause());
+  else ALL_VIDS.forEach((v) => {
+    const r = v.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth) playVid(v);
+  });
+});

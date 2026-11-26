@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Qualquer pessoa vê as imagens/vídeos do site. Só o(s) email(s) da lista enviam.
+    match /media/{file=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.email_verified == true
+                   && request.auth.token.email in ['TROCAR@EMAIL.COM']
+                   && request.resource.size < 200 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/.*') || request.resource.contentType.matches('video/.*'));
+    }
+  }
+}

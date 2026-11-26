@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Dashboard — Site</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="login" id="login" hidden>
+  <form class="login__box" id="loginForm">
+    <h1>Dashboard</h1>
+    <p>Entra para editar o site.</p>
+    <label>Email<input type="email" id="loginEmail" autocomplete="username" required></label>
+    <label>Palavra-passe<input type="password" id="loginPass" autocomplete="current-password" required></label>
+    <button class="btn btn--primary" type="submit">Entrar</button>
+    <p class="login__err" id="loginErr"></p>
+  </form>
+</div>
+
+<header class="bar">
+  <strong class="bar__title">Dashboard</strong>
+  <span class="badge" id="badge">…</span>
+  <span class="bar__sp"></span>
+  <span class="bar__state" id="state"></span>
+  <button class="btn" id="btnImport" title="Carregar um content.json">Importar</button>
+  <button class="btn" id="btnReset" title="Descartar rascunho e voltar ao publicado">Repor</button>
+  <button class="btn" id="btnExport" title="Descarregar content.json">Exportar</button>
+  <button class="btn btn--primary" id="btnPublish">Publicar</button>
+  <button class="btn" id="btnLogout" hidden>Sair</button>
+  <input type="file" id="fileImport" accept="application/json" hidden>
+</header>
+
+<div class="app">
+  <nav class="side" id="side"></nav>
+  <main class="editor" id="editor"></main>
+  <aside class="preview" id="previewPane">
+    <div class="preview__bar">
+      <select id="pvPage"></select>
+      <button class="btn btn--sm is-on" data-dev="desktop">Desktop</button>
+      <button class="btn btn--sm" data-dev="mobile">Telemóvel</button>
+      <button class="btn btn--sm" id="pvReload">↻</button>
+    </div>
+    <div class="preview__stage"><iframe id="pv" name="folio-preview" title="Pré-visualização"></iframe></div>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="firebase-config.js"></script>
+<script src="js/admin.js" type="module"></script>
+</body>
+</html>

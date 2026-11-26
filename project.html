@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Projeto — Cristiana Fernandes</title>
+<title>Projeto</title>
+<meta name="description" content="">
 <link rel="stylesheet" href="css/style.css">
 <script>if(sessionStorage.getItem("tr")==="1")document.documentElement.classList.add("from-tr")</script>
 </head>
@@ -12,7 +13,7 @@
 <div class="curtain" aria-hidden="true"></div>
 
 <header class="nav">
-  <a class="nav__logo" href="index.html" data-t>CRISTIANA FERNANDES</a>
+  <a class="nav__logo" href="index.html" data-t></a>
   <nav class="nav__links">
     <a href="index.html#trabalho" data-t>Trabalho</a>
     <a href="index.html#sobre" data-t>Sobre</a>
@@ -46,8 +47,8 @@
 
   <footer class="proj-foot">
     <a href="index.html#trabalho" data-t>← Todo o trabalho</a>
-    <span>ola@exemplo.pt</span>
-    <span>© 2026 Cristiana Fernandes</span>
+    <span id="footMail"></span>
+    <span id="footName"></span>
   </footer>
 </main>
 
@@ -55,8 +56,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js"></script>
+<script src="firebase-config.js"></script>
 <script src="js/common.js"></script>
-<script src="js/projects.js"></script>
+<script src="js/content.js"></script>
 <script src="js/project.js"></script>
 </body>
 </html>

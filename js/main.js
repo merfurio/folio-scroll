@@ -2,7 +2,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 /* ---------- loader + intro ---------- */
 function intro() {
-  if (ARRIVED) {
+  if (ARRIVED || PREVIEW) {
     gsap.set('.loader', { display: 'none' });
     const t = gsap.timeline({ delay: 0.25 });
     t.from('.hero__media', { clipPath: 'inset(0 0 100% 0)', duration: 1, ease: 'power4.out' })
@@ -124,20 +124,28 @@ function reveals() {
   gsap.from('.contact__kicker,.contact__foot', { opacity: 0, y: 16, duration: 0.9, stagger: 0.2, scrollTrigger: { trigger: '.contact', start: 'top 55%' } });
 }
 
-hero();
-work();
-ethos();
-marquee();
-reveals();
-window.addEventListener('load', () => {
-  ScrollTrigger.refresh();
-  intro();
-  const hashEl = location.hash && document.querySelector(location.hash);
-  if (hashEl) {
-    // o layout dos pins assenta aos poucos: corrige a posição até estabilizar
-    const go = () => lenis.scrollTo(hashEl, { immediate: true, force: true });
-    [0, 250, 700, 1500].forEach((ms) => setTimeout(() => {
-      if (Math.abs(hashEl.getBoundingClientRect().top) > 2) go();
-    }, ms));
-  }
+window.contentReady.then((c) => {
+  renderHome(c);
+  hero();
+  work();
+  ethos();
+  marquee();
+  reveals();
+  const start = () => {
+    ScrollTrigger.refresh();
+    intro();
+    if (PREVIEW) {
+      const y = +sessionStorage.getItem('folio-prev-y') || 0;
+      if (y) [300, 900, 1800].forEach((ms) => setTimeout(() => lenis.scrollTo(y, { immediate: true, force: true }), ms));
+    }
+    const hashEl = location.hash && document.querySelector(location.hash);
+    if (hashEl) {
+      // o layout dos pins assenta aos poucos: corrige a posição até estabilizar
+      const go = () => lenis.scrollTo(hashEl, { immediate: true, force: true });
+      [0, 250, 700, 1500].forEach((ms) => setTimeout(() => {
+        if (Math.abs(hashEl.getBoundingClientRect().top) > 2) go();
+      }, ms));
+    }
+  };
+  document.readyState === 'complete' ? start() : window.addEventListener('load', start);
 });

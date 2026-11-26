@@ -15,3 +15,10 @@ Stack: HTML/CSS/JS puro + GSAP/ScrollTrigger + Lenis + SplitType (CDN). Sem buil
 
 ## Correr
 python3 -m http.server 5188  →  http://localhost:5188
+
+## Conteúdo editável + dashboard
+- [x] Todo o conteúdo em `content.json` (site, tema/cores, hero, projetos, sobre, serviços, contacto); o site renderiza a partir dele (`js/content.js`)
+- [x] Dashboard `admin.html` (modo local: rascunho + exportar content.json; pré-visualização ao vivo desktop/telemóvel)
+- [x] Código Firebase pronto (login, publicar no Firestore, upload Storage) — NÃO testado, falta criar o projeto: ver `docs/FIREBASE.md`
+- [ ] Criar projeto Firebase, preencher `firebase-config.js`, trocar email nas `*.rules`, deploy das regras
+- [ ] Testar login, publicar e upload com Firebase real

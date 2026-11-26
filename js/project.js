@@ -1,9 +1,13 @@
 /* página de projeto: lê ?p=N, preenche e anima */
+window.contentReady.then((C) => {
+const PROJECTS = C.projects;
 const idx = Math.min(PROJECTS.length, Math.max(1, parseInt(new URLSearchParams(location.search).get('p'), 10) || 1)) - 1;
 const P = PROJECTS[idx];
 const NEXT = PROJECTS[(idx + 1) % PROJECTS.length];
 
-document.title = `${P.title} — Cristiana Fernandes`;
+renderChrome(C, P.title);
+document.getElementById('footMail').textContent = C.site.email;
+document.getElementById('footName').textContent = `© ${new Date().getFullYear()} ${C.site.name}`;
 document.querySelector('.proj-hero__type').textContent = `${pad2(idx + 1)} / ${pad2(PROJECTS.length)} — ${P.type}`;
 document.querySelector('.proj-hero__title span').textContent = P.title.toUpperCase();
 document.getElementById('mClient').textContent = P.client;
@@ -14,23 +18,19 @@ document.getElementById('projText').textContent = P.text;
 const nx = document.getElementById('projNext');
 nx.href = `project.html?p=${((idx + 1) % PROJECTS.length) + 1}`;
 nx.querySelector('.proj-next__t').textContent = NEXT.title.toUpperCase();
-
-const isImg = (s) => /\.(jpe?g|png|webp|avif|gif)$/i.test(s);
-const mediaHTML = (s, first) =>
-  isImg(s)
-    ? `<img class="vid is-ready" src="${s}" alt="${P.title}" loading="${first ? 'eager' : 'lazy'}">`
-    : `<video class="vid" data-src="${s}" muted loop playsinline preload="none"></video>`;
+fitText();
 
 const cover = document.getElementById('projCover');
 cover.dataset.label = 'CAPA';
-cover.innerHTML = `<div class="proj-hero__media-inner">${mediaHTML(P.cover, true)}</div>`;
+cover.innerHTML = `<div class="proj-hero__media-inner">${mediaHTML(P.cover, { eager: true, alt: P.title })}</div>`;
 
 const gal = document.getElementById('projGallery');
 const shapes = ['wide', 'half', 'half'];
 gal.innerHTML = P.gallery
-  .map((s, i) => `<figure class="g g--${shapes[i] || 'wide'}" data-label="${pad2(i + 1)}" style="--h:${(idx * 60 + i * 90) % 360}"><div class="g__in">${mediaHTML(s)}</div></figure>`)
+  .map((s, i) => `<figure class="g g--${shapes[i] || 'wide'}" data-label="${pad2(i + 1)}" style="--h:${(idx * 60 + i * 90) % 360}"><div class="g__in">${mediaHTML(s, { alt: P.title })}</div></figure>`)
   .join('');
 initVideos();
+markImages();
 
 /* entrada */
 const tl = gsap.timeline({ delay: ARRIVED ? 0.5 : 0.1 });
@@ -73,4 +73,5 @@ gsap.utils.toArray('.g').forEach((g) => {
 /* próximo projeto */
 gsap.from('.proj-next__t', { yPercent: 40, opacity: 0, duration: 1, ease: 'power4.out', scrollTrigger: { trigger: '.proj-next', start: 'top 75%' } });
 
-window.addEventListener('load', () => ScrollTrigger.refresh());
+document.readyState === 'complete' ? ScrollTrigger.refresh() : window.addEventListener('load', () => ScrollTrigger.refresh());
+});
