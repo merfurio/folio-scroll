@@ -17,5 +17,5 @@ window.FIREBASE_CONFIG = {
 
 /* Upload de vídeos/fotos pelo dashboard (Cloudinary, plano grátis, sem cartão).
    Ver docs/FIREBASE.md → "Upload de ficheiros". Preencher cloudName e uploadPreset (unsigned). */
-window.CLOUDINARY = null;
+window.CLOUDINARY = { cloudName: "o5tclchv", uploadPreset: "crisfolio" };
 /* Exemplo: window.CLOUDINARY = { cloudName: "o-teu-cloud", uploadPreset: "site_unsigned" }; */
