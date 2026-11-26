@@ -187,16 +187,16 @@ function mediaEl(label, value, set, hint) {
   const file = el('input', { type: 'file', accept: 'video/mp4,video/webm,image/*', hidden: true });
   const btn = el('button', { class: 'btn btn--sm', type: 'button', onclick: () => {
     if (!CLD) return toast('Upload não configurado (Cloudinary). Em alternativa copia o ficheiro para media/ e escreve o caminho.', true);
-    if (!canUpload()) return toast('Entra primeiro para enviar ficheiros', true);
+    if (!canUpload()) return toast('Entra primeiro para carregar ficheiros', true);
     file.click();
-  } }, 'Enviar');
+  } }, 'Carregar');
   file.addEventListener('change', async () => {
     const f = file.files[0]; if (!f) return;
     try {
       prog.hidden = false;
       const url = await upload(f, (p) => (prog.firstChild.style.width = p + '%'));
-      input.value = url; set(url); paintThumb(url); toast('Ficheiro enviado');
-    } catch (e) { console.error(e); toast('Falha no envio: ' + (e.code || e.message), true); }
+      input.value = url; set(url); paintThumb(url); toast('Ficheiro carregado');
+    } catch (e) { console.error(e); toast('Falha ao carregar: ' + (e.code || e.message), true); }
     prog.hidden = true; prog.firstChild.style.width = '0'; file.value = '';
   });
   return el('div', { class: 'f' }, el('span', {}, label),

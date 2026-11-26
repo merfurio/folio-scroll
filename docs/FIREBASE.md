@@ -38,7 +38,7 @@ um clique e upload de vídeos/fotos.
 2. Settings → Upload → *Upload presets* → Add: **Signing mode = Unsigned**, folder `site`,
    *Allowed formats* `mp4,webm,jpg,png,webp,avif`, e um limite de tamanho. Anotar o nome do preset.
 3. Copiar o *Cloud name* (Dashboard) e o nome do preset para `window.CLOUDINARY` em `firebase-config.js`.
-4. No dashboard, o botão **Enviar** passa a funcionar (fotos são otimizadas; vídeos ficam como enviados).
+4. No dashboard, o botão **Carregar** passa a funcionar (fotos são otimizadas; vídeos ficam como enviados).
 Limites do plano grátis: ~100 MB por vídeo e 10 MB por foto; 25 créditos/mês (armazenamento + largura de banda).
 Comprimir os vídeos antes (mp4 H.264, 1080p, sem áudio). O preset *unsigned* não tem segredo: o preset
 limita formatos e tamanho para reduzir abuso.

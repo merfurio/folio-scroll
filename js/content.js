@@ -21,12 +21,22 @@ function markImages(root = document) {
   });
 }
 
+function isDark() { return document.documentElement.classList.contains('dark'); }
 function applyTheme(c) {
   const t = c.theme || {};
   const r = document.documentElement.style;
-  if (t.bg) r.setProperty('--bg', t.bg);
-  if (t.fg) r.setProperty('--fg', t.fg);
+  const dark = isDark();
+  /* modo escuro = troca fundo e texto das cores escolhidas no dashboard */
+  const bg = dark ? t.fg : t.bg, fg = dark ? t.bg : t.fg;
+  if (bg) r.setProperty('--bg', bg); else r.removeProperty('--bg');
+  if (fg) r.setProperty('--fg', fg); else r.removeProperty('--fg');
   if (t.accent) r.setProperty('--acc', t.accent);
+}
+function toggleTheme() {
+  const dark = document.documentElement.classList.toggle('dark');
+  try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) { /* sem storage */ }
+  document.querySelectorAll('.theme-btn .t-txt').forEach((t) => (t.textContent = dark ? 'Claro' : 'Escuro'));
+  applyTheme(window.CONTENT || {});
 }
 
 async function fetchFirestore(cfg) {
@@ -60,6 +70,14 @@ function renderChrome(c, pageTitle) {
   if (md && s.description) md.setAttribute('content', s.description);
   const logo = document.querySelector('.nav__logo');
   if (logo) logo.textContent = (s.name || '').toUpperCase();
+  const links = document.querySelector('.nav__links');
+  if (links && !links.querySelector('.theme-btn')) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'theme-btn'; b.innerHTML = `<span class="t-txt">${isDark() ? 'Claro' : 'Escuro'}</span><span class="t-ico">◐</span>`;
+    b.setAttribute('aria-label', 'Alternar modo claro/escuro');
+    b.addEventListener('click', toggleTheme);
+    links.appendChild(b);
+  }
 }
 
 /* ---------- home ---------- */
