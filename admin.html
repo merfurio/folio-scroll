@@ -60,7 +60,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script>document.querySelectorAll("[data-theme-btn]").forEach(b=>b.addEventListener("click",()=>{const d=document.documentElement.classList.toggle("dark");try{localStorage.setItem("admin-theme",d?"dark":"light")}catch(e){}}))</script>
-<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("admin-sw.js",{scope:"admin.html"}).catch(()=>{}))</script>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("admin-sw.js",{scope:"admin"}).catch(()=>{}))</script>
 <script src="firebase-config.js"></script>
 <script src="js/admin.js" type="module"></script>
 </body>
