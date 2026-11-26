@@ -10,14 +10,13 @@
 <body>
 
 <div class="login" id="login" hidden>
-  <form class="login__box" id="loginForm">
+  <div class="login__box">
     <h1>Dashboard</h1>
-    <p>Entra para editar o site.</p>
-    <label>Email<input type="email" id="loginEmail" autocomplete="username" required></label>
-    <label>Palavra-passe<input type="password" id="loginPass" autocomplete="current-password" required></label>
-    <button class="btn btn--primary" type="submit">Entrar</button>
+    <p id="loginMsg">Entra com a tua conta Google para editar o site.</p>
+    <button class="btn btn--primary" id="btnGoogle" type="button">Entrar com Google</button>
+    <button class="btn" id="btnLoginOut" type="button" hidden>Sair e trocar de conta</button>
     <p class="login__err" id="loginErr"></p>
-  </form>
+  </div>
 </div>
 
 <header class="bar">

@@ -1,12 +1,24 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // O site lê o conteúdo sem login. Só o(s) email(s) da lista escrevem.
+    // Quem pode editar: contas Google com o documento admins/<email> (criado à mão na consola).
+    // Os emails ficam no Firestore, não neste ficheiro (o repo é público).
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email_verified == true
+          && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
+
+    // O site lê o conteúdo sem login; só admins escrevem.
     match /site/{doc} {
       allow read: if true;
-      allow write: if request.auth != null
-                   && request.auth.token.email_verified == true
-                   && request.auth.token.email in ['TROCAR@EMAIL.COM'];
+      allow write: if isAdmin();
+    }
+
+    // Cada utilizador só consegue ver se o seu próprio email está na lista. Ninguém escreve por aqui.
+    match /admins/{email} {
+      allow get: if request.auth != null && request.auth.token.email == email;
+      allow list, write: if false;
     }
   }
 }

@@ -255,14 +255,25 @@ async function initFirebase() {
         t.on('state_changed', (s) => onProg(Math.round((s.bytesTransferred / s.totalBytes) * 100)), rej, async () => res(await ST.getDownloadURL(t.snapshot.ref)));
       });
     },
-    login: (e, p) => A.signInWithEmailAndPassword(auth, e, p),
+    google: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
     logout: () => A.signOut(auth),
+    // só quem tem o documento admins/<email> pode editar (as regras também o impõem)
+    async isAdmin(u) {
+      if (!u?.email || !u.emailVerified) return false;
+      try { return (await S.getDoc(S.doc(db, 'admins', u.email))).exists(); } catch (e) { return false; }
+    },
   };
   return new Promise((resolve) => {
-    A.onAuthStateChanged(auth, (u) => {
-      fb.user = u;
-      $('#login').hidden = !!u;
-      $('#btnLogout').hidden = !u;
+    A.onAuthStateChanged(auth, async (u) => {
+      const ok = u ? await fb.isAdmin(u) : false;
+      fb.user = ok ? u : null;
+      $('#login').hidden = ok;
+      $('#btnLogout').hidden = !ok;
+      $('#btnGoogle').hidden = !!u && !ok;
+      $('#btnLoginOut').hidden = !(u && !ok);
+      $('#loginMsg').textContent = u && !ok
+        ? `A conta ${u.email} não tem permissão para editar este site.`
+        : 'Entra com a tua conta Google para editar o site.';
       setBadge();
       resolve();
     });
@@ -312,11 +323,12 @@ async function main() {
     e.target.value = '';
   });
   $('#btnLogout').addEventListener('click', () => fb.logout());
-  $('#loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); $('#loginErr').textContent = '';
-    try { await fb.login($('#loginEmail').value, $('#loginPass').value); }
-    catch (err) { $('#loginErr').textContent = 'Email ou palavra-passe incorretos.'; }
+  $('#btnGoogle').addEventListener('click', async () => {
+    $('#loginErr').textContent = '';
+    try { await fb.google(); }
+    catch (err) { if (err.code !== 'auth/popup-closed-by-user') $('#loginErr').textContent = 'Não foi possível entrar: ' + (err.code || err.message); }
   });
+  $('#btnLoginOut').addEventListener('click', () => fb.logout());
   $('#pvPage').addEventListener('change', reloadPreview);
   $('#pvReload').addEventListener('click', reloadPreview);
   document.querySelectorAll('[data-dev]').forEach((b) => b.addEventListener('click', () => {
