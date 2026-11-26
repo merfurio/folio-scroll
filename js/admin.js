@@ -1,6 +1,6 @@
 /* Dashboard: edita content.json (textos, cores, vídeos, imagens, projetos).
    Modo local (sem Firebase): rascunho no browser + exportar content.json.
-   Modo Firebase: login, publicar no Firestore e enviar ficheiros para o Storage. */
+   Modo Firebase: login Google e publicar no Firestore. Upload de ficheiros: Cloudinary. */
 
 const DRAFT_KEY = 'folio-draft';
 const FB = window.FIREBASE_CONFIG;
@@ -88,7 +88,7 @@ const SECTIONS = [
 let content = null;
 let published = null;
 let section = SECTIONS[0].id;
-let fb = null; // { auth, db, storage, user, fn }
+let fb = null; // { user, publish, google, logout, isAdmin }
 let dirty = false;
 
 async function loadPublished() {
@@ -186,14 +186,15 @@ function mediaEl(label, value, set, hint) {
   const prog = el('div', { class: 'media__prog', hidden: true }, el('i'));
   const file = el('input', { type: 'file', accept: 'video/mp4,video/webm,image/*', hidden: true });
   const btn = el('button', { class: 'btn btn--sm', type: 'button', onclick: () => {
-    if (!fb?.user) return toast('Upload só com o Firebase ligado. Em modo local, copia o ficheiro para a pasta media/ e escreve o caminho.', true);
+    if (!CLD) return toast('Upload não configurado (Cloudinary). Em alternativa copia o ficheiro para media/ e escreve o caminho.', true);
+    if (!canUpload()) return toast('Entra primeiro para enviar ficheiros', true);
     file.click();
   } }, 'Enviar');
   file.addEventListener('change', async () => {
     const f = file.files[0]; if (!f) return;
     try {
       prog.hidden = false;
-      const url = await fb.upload(f, (p) => (prog.firstChild.style.width = p + '%'));
+      const url = await upload(f, (p) => (prog.firstChild.style.width = p + '%'));
       input.value = url; set(url); paintThumb(url); toast('Ficheiro enviado');
     } catch (e) { console.error(e); toast('Falha no envio: ' + (e.code || e.message), true); }
     prog.hidden = true; prog.firstChild.style.width = '0'; file.value = '';
@@ -237,24 +238,39 @@ function reloadPreview() {
   if (f.getAttribute('src') === url) f.contentWindow.location.reload(); else f.src = url;
 }
 
+/* ---------- upload (Cloudinary, sem Storage do Firebase) ---------- */
+const CLD = window.CLOUDINARY;
+const canUpload = () => !!CLD && (!FB || !!fb?.user);
+function upload(file, onProg) {
+  return new Promise((resolve, reject) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLD.uploadPreset);
+    fd.append('folder', 'site');
+    const x = new XMLHttpRequest();
+    x.open('POST', `https://api.cloudinary.com/v1_1/${CLD.cloudName}/auto/upload`);
+    x.upload.onprogress = (e) => e.lengthComputable && onProg(Math.round((e.loaded / e.total) * 100));
+    x.onload = () => {
+      let r = {}; try { r = JSON.parse(x.responseText); } catch (e) { /* resposta inválida */ }
+      if (x.status !== 200 || !r.secure_url) return reject(new Error(r.error?.message || 'HTTP ' + x.status));
+      // fotos: otimiza e limita a largura; vídeos ficam como enviados
+      resolve(r.resource_type === 'image' ? r.secure_url.replace('/upload/', '/upload/q_auto,f_auto,w_2400,c_limit/') : r.secure_url);
+    };
+    x.onerror = () => reject(new Error('sem ligação'));
+    x.send(fd);
+  });
+}
+
 /* ---------- Firebase ---------- */
 async function initFirebase() {
-  const [{ initializeApp }, A, S, ST] = await Promise.all([
-    import(`${SDK}/firebase-app.js`), import(`${SDK}/firebase-auth.js`), import(`${SDK}/firebase-firestore.js`), import(`${SDK}/firebase-storage.js`),
+  const [{ initializeApp }, A, S] = await Promise.all([
+    import(`${SDK}/firebase-app.js`), import(`${SDK}/firebase-auth.js`), import(`${SDK}/firebase-firestore.js`),
   ]);
   const app = initializeApp(FB);
-  const auth = A.getAuth(app), db = S.getFirestore(app), storage = ST.getStorage(app);
+  const auth = A.getAuth(app), db = S.getFirestore(app);
   fb = {
     user: null,
     async publish(json) { await S.setDoc(S.doc(db, 'site', 'content'), { json: JSON.stringify(json), updatedAt: S.serverTimestamp() }); },
-    upload(file, onProg) {
-      const safe = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-');
-      const r = ST.ref(storage, `media/${Date.now()}-${safe}`);
-      return new Promise((res, rej) => {
-        const t = ST.uploadBytesResumable(r, file, { cacheControl: 'public,max-age=31536000' });
-        t.on('state_changed', (s) => onProg(Math.round((s.bytesTransferred / s.totalBytes) * 100)), rej, async () => res(await ST.getDownloadURL(t.snapshot.ref)));
-      });
-    },
     google: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
     logout: () => A.signOut(auth),
     // só quem tem o documento admins/<email> pode editar (as regras também o impõem)

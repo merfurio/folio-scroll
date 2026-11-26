@@ -20,5 +20,6 @@ python3 -m http.server 5188  →  http://localhost:5188
 - [x] Todo o conteúdo em `content.json` (site, tema/cores, hero, projetos, sobre, serviços, contacto); o site renderiza a partir dele (`js/content.js`)
 - [x] Dashboard `admin.html` (modo local: rascunho + exportar content.json; pré-visualização ao vivo desktop/telemóvel)
 - [x] Código Firebase pronto (login, publicar no Firestore, upload Storage) — NÃO testado, falta criar o projeto: ver `docs/FIREBASE.md`
-- [ ] Criar projeto Firebase, ativar login Google, preencher `firebase-config.js`, deploy das regras, criar docs `admins/<email>` (Miguel + Cristiana)
+- [ ] Criar projeto Firebase (só Auth Google + Firestore + Hosting, Spark), preencher `firebase-config.js`, deploy das regras, criar docs `admins/<email>` (Miguel + Cristiana)
+- [ ] Conta Cloudinary + preset unsigned → `window.CLOUDINARY` (upload de vídeos/fotos)
 - [ ] Testar login, publicar e upload com Firebase real
