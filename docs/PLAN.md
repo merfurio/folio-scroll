@@ -20,6 +20,13 @@ python3 -m http.server 5188  →  http://localhost:5188
 - [x] Todo o conteúdo em `content.json` (site, tema/cores, hero, projetos, sobre, serviços, contacto); o site renderiza a partir dele (`js/content.js`)
 - [x] Dashboard `admin.html` (modo local: rascunho + exportar content.json; pré-visualização ao vivo desktop/telemóvel)
 - [x] Código Firebase pronto (login, publicar no Firestore, upload Storage) — NÃO testado, falta criar o projeto: ver `docs/FIREBASE.md`
-- [ ] Criar projeto Firebase (só Auth Google + Firestore + Hosting, Spark), preencher `firebase-config.js`, deploy das regras, criar docs `admins/<email>` (Miguel + Cristiana)
+- [x] Projeto Firebase `crisfolio-site` (conta miguelmdesignio, Spark), app web criada, config em `firebase-config.js`, Hosting no ar: https://crisfolio-site.web.app
+- [ ] Firebase consola: ativar login Google; criar Firestore (eur3); `firebase deploy --only firestore:rules`; criar docs `admins/<email>` (Miguel + Cristiana)
 - [ ] Conta Cloudinary + preset unsigned → `window.CLOUDINARY` (upload de vídeos/fotos)
 - [ ] Testar login, publicar e upload com Firebase real
+
+## Deploy (Firebase Hosting)
+```
+firebase deploy --only hosting --project crisfolio-site --account miguelmdesignio@gmail.com
+```
+Atenção: `firebase.json` ignora `.git`, `docs`, `*.rules`. Se mudares a lista, confirma que `/.git/config` dá 404 depois do deploy.
