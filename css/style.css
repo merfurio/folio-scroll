@@ -7,7 +7,8 @@
 html.dark{--bg:#0b0b0b;--fg:#f4f2ee}
 .theme-btn{border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;padding:0;margin-left:clamp(14px,2.4vw,36px)}
 .theme-btn:hover{opacity:.6}
-.t-ico{display:none}
+.t-txt{display:none}
+.t-ico{display:inline;font-size:16px;line-height:1}
 html.dark .proj-meta{border-bottom-color:#fff2}
 html.dark .proj-meta dt{color:#fff8}
 
@@ -119,8 +120,6 @@ h1,h2{font-weight:700;letter-spacing:-.045em;line-height:.82}
 @media (max-width:760px){
   .nav__links{gap:12px;font-size:12px}
   .theme-btn{margin-left:9px}
-  .t-txt{display:none}
-  .t-ico{display:inline;font-size:15px;line-height:1}
   .ethos__top{grid-template-columns:1fr auto}
   .ethos__index{display:none}
   .services__list li{grid-template-columns:36px 1fr}
