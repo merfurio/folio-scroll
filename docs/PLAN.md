@@ -11,7 +11,7 @@ Stack: HTML/CSS/JS puro + GSAP/ScrollTrigger + Lenis + SplitType (CDN). Sem buil
 - [x] Páginas de projeto (project.html?p=N, dados em js/projects.js) + transição de cortina entre páginas (sem Barba)
 - [ ] Email e redes reais (hoje ola@exemplo.pt)
 - [x] Mobile afinado (375px): nav compacta, hero, cartões verticais, ethos, contacto, páginas de projeto. Falta testar em telemóvel real + tablet
-- [ ] Deploy
+- [x] Deploy provisório no GitHub Pages: https://merfurio.github.io/folio-scroll/ (repo público). Depois: Firebase Hosting
 
 ## Correr
 python3 -m http.server 5188  →  http://localhost:5188
